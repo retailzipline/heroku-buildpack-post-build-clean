@@ -30,3 +30,10 @@ while read file; do
     echo "Location ${file} not found - ignoring"
   fi
 done <${CLEAN_FILES}
+
+# Strip test/spec/doc directories from installed gems — these are not needed at
+# runtime and can add 25MB+ to the slug.
+if [[ -d "vendor/bundle" ]]; then
+  echo "Stripping test/spec/doc directories from vendor/bundle"
+  find vendor/bundle -maxdepth 5 -type d \( -name test -o -name spec -o -name docs -o -name doc \) -exec rm -rf {} + 2>/dev/null || true
+fi
